@@ -31,7 +31,7 @@ with st.sidebar:
                             
                           
                            ],
-                           menu_icon='hospital-fill',
+                          
                            icons=['heart'],
                            default_index=0)
 
