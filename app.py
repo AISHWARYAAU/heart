@@ -23,20 +23,7 @@ heart_disease_model = pickle.load(open('heart_disease_model.sav', 'rb'))
 
 
 
-# Sidebar for navigation
-with st.sidebar:
-    selected = option_menu('Medical Diagnosis',
-                           [
-                            'Heart Disease Prediction',
-                             ],
-                          
-                           icons=['heart'],
-                           default_index=0)
 
-
-
-# Heart Disease Prediction Page
-if selected == 'Heart Disease Prediction':
     st.title('Heart Disease Prediction using Machine Learning')
 
     col1, col2, col3 = st.columns(3)
