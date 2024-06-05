@@ -28,9 +28,7 @@ with st.sidebar:
     selected = option_menu('Medical Diagnosis',
                            [
                             'Heart Disease Prediction',
-                            
-                          
-                           ],
+                             ],
                           
                            icons=['heart'],
                            default_index=0)
