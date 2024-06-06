@@ -47,11 +47,11 @@ def show_user_inputs():
 def main():
     st.set_page_config(page_title="Disease Prediction", page_icon="+", layout="wide")
     with st.sidebar:
-        models_list = ['Working models',
+        models_list = [
                        'Logistic Regression',
                       ]
 
-        selected_model = option_menu('Select a model', models_list, icons=['heart'], default_index=0)
+        selected_model = option_menu('Heart Disease Prediction', models_list, icons=['heart'], default_index=0)
     models = load_models()
 
     if selected_model == 'Working models':
