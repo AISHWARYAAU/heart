@@ -48,7 +48,7 @@ def main():
     st.set_page_config(page_title="Disease Prediction", page_icon="+", layout="wide")
     with st.sidebar:
         models_list = [
-                       'Logistic Regression',
+                       'Logistic Regression'
                       ]
 
         selected_model = option_menu('Heart Disease Prediction', models_list, icons=['heart'], default_index=0)
