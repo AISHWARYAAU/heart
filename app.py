@@ -1,80 +1,91 @@
-import os
 import pickle
+import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-# Set page configuration
-st.set_page_config(page_title="Health Assistant",
-                   layout="wide",
-                   page_icon="🧑‍⚕️")
 
-# getting the working directory of the main.py
-working_dir = os.path.dirname(os.path.abspath(__file__))
-
-
+def load_models():
+    models = {
+        'Logistic Regression': pickle.load(open('heart_disease_model.sav', 'rb')),
+        
+    }
+    return models
 
 
-# loading the saved models
+def predict_risk(models, selected_model, features):
+    model = models[selected_model]
+    prediction = model.predict(features)
+    return prediction[0]
 
 
-
-heart_disease_model = pickle.load(open('heart_disease_model.sav', 'rb'))
-
-
-
-
-
-    st.title('Heart Disease Prediction using Machine Learning')
-
+def show_user_inputs():
+    st.title("Heart Disease Risk Prediction")
     col1, col2, col3 = st.columns(3)
-    with col1:
-        age = st.text_input('Age')
-    with col2:
-        sex = st.text_input('Sex')
-    with col3:
-        cp = st.text_input('Chest Pain types')
-    with col1:
-        trestbps = st.text_input('Resting Blood Pressure')
-    with col2:
-        chol = st.text_input('Serum Cholesterol in mg/dl')
-    with col3:
-        fbs = st.text_input('Fasting Blood Sugar > 120 mg/dl')
-    with col1:
-        restecg = st.text_input('Resting Electrocardiographic results')
-    with col2:
-        thalach = st.text_input('Maximum Heart Rate achieved')
-    with col3:
-        exang = st.text_input('Exercise Induced Angina')
-    with col1:
-        oldpeak = st.text_input('ST depression induced by exercise')
-    with col2:
-        slope = st.text_input('Slope of the peak exercise ST segment')
-    with col3:
-        ca = st.text_input('Major vessels colored by fluoroscopy')
-    with col1:
-        thal = st.text_input('thal: 0 = normal; 1 = fixed defect; 2 = reversible defect')
 
-    heart_diagnosis = ''
-    if st.button('Heart Disease Test Result'):
-        try:
-            user_input = [float(age), float(sex), float(cp), float(trestbps), float(chol), float(fbs),
-                          float(restecg), float(thalach), float(exang), float(oldpeak), float(slope),
-                          float(ca), float(thal)]
-            heart_prediction = heart_disease_model.predict([user_input])
-            if heart_prediction[0] == 1:
-                heart_diagnosis = 'The person is having heart disease'
-            else:
-                heart_diagnosis = 'The person does not have any heart disease'
-            st.success(heart_diagnosis)
-        except ValueError:
-            st.error('Please enter valid numbers for all fields.')
+    with col1:
+        age = st.number_input("Age ", step=1, min_value=1)
+        trestbps = st.number_input("Resting Blood Pressure", step=1, min_value=1)
+        restecg = st.selectbox("Resting Electrocardiographic Results (0 = normal, 1 = having ST-T wave abnormality, 2 = showing probable ", [0, 1, 2])
+        oldpeak = st.number_input("ST Depression Induced by Exercise")
+        thal = st.selectbox("Thal", [1, 2, 3])
 
+    with col2:
+        sex = st.selectbox("Sex (1 = male, 0 = female)", [0, 1])
+        chol = st.number_input("Serum Cholestoral in mg/dl", step=1, min_value=1)
+        thalach = st.number_input("Maximum Heart Rate Achieved", step=1, min_value=1)
+        slope = st.selectbox("Slope of the Peak Exercise ST Segment", [0, 1, 2])
+
+    with col3:
+        cp = st.selectbox("Chest Pain Type  (1 = typical angina, 2 = atypical angina, 3 = non-anginal pain, 4 = asymptomatic)", [1, 2, 3, 4])
+        fbs = st.selectbox("Fasting blood sugar level (1 = >120 mg/dL, 0 = <=120 mg/dL).", [0, 1])
+        exang = st.selectbox("Exercise Induced Angina", [0, 1])
+        ca = st.selectbox("Major Vessels Colored by Flourosopy", [0, 1, 2, 3])
+
+    return [age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]
+
+
+def main():
+    st.set_page_config(page_title="Disease Prediction", page_icon="+", layout="wide")
+    with st.sidebar:
+        models_list = ['Working models',
+                       'Logistic Regression',
+                      ]
+
+        selected_model = option_menu('Select a model', models_list, icons=['heart'], default_index=0)
+    models = load_models()
+
+    if selected_model == 'Working models':
+        features = show_user_inputs()
+        if st.button("Predict"):
+            results = {}
+            for model_name in models:
+                result = predict_risk(models, model_name, [features])
+                results[model_name] = result
+
+            results_df = pd.DataFrame(results.items(), columns=['Model', 'Result'])
+            results_df['Result'] = results_df['Result'].astype(str)
 
            
+            for model_name, result in results.items():
+                st.write(model_name + ":")
+                if result == 1:
+                    st.success("The person has a risk of heart disease.")
+                else:
+                    st.success("The person does not have a risk of heart disease.")
+    else:
+        if selected_model in models:
+            features = show_user_inputs()
+
+            if st.button("Predict"):
+                result = predict_risk(models, selected_model, [features])
+                st.write(selected_model + ":")
+                if result == 1:
+                    st.success("The person has a risk of heart disease.")
+                else:
+                    st.success("The person does not have a risk of heart disease.")
+        else:
+            st.write("Model unavailable")
 
 
-
-# Running the app
-if __name__ == '__main__':
-    st.success('Welcome to the Health Assistant application!')
-
+if __name__ == "__main__":
+    main()
