@@ -36,7 +36,7 @@ def show_user_inputs():
         slope = st.selectbox("Slope of the Peak Exercise ST Segment", [0, 1, 2])
 
     with col3:
-        cp = st.selectbox("Chest Pain Type  (1 = typical angina, 2 = atypical angina, 3 = non-anginal pain, 4 = asymptomatic)", [1, 2, 3, 4])
+        cp = st.selectbox("Chest Pain Type  (0= typical angina, 1 = atypical angina, 2 = non-anginal pain, 3 = asymptomatic)", [0,1, 2, 3])
         fbs = st.selectbox("Fasting blood sugar level (1 = >120 mg/dL, 0 = <=120 mg/dL).", [0, 1])
         exang = st.selectbox("Exercise Induced Angina", [0, 1])
         ca = st.selectbox("Major Vessels Colored by Flourosopy", [0, 1, 2, 3])
@@ -79,7 +79,7 @@ def main():
             if st.button("Predict"):
                 result = predict_risk(models, selected_model, [features])
                 st.write(selected_model + ":")
-                if result == 1:
+                if result == 0:
                     st.success("The person has a risk of heart disease.")
                 else:
                     st.success("The person does not have a risk of heart disease.")
